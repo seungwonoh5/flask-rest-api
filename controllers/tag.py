@@ -9,7 +9,7 @@ from schema import TagSchema, TagAndItemSchema
 blp = Blueprint("Tags", __name__, description="Operation on Tags")
 
 
-@blp.route("/store/<string:store_id>/tag")
+@blp.route("/store/<int:store_id>/tag")
 class TagInStore(MethodView):
     @blp.response(200, TagSchema(many=True))
     def get(self, store_id):
@@ -35,12 +35,15 @@ class TagInStore(MethodView):
         return tag
 
 
-@blp.route("/item/<string:item_id>/tag/<string:tag_id>")
+@blp.route("/item/<int:item_id>/tag/<int:tag_id>")
 class LinkTagsToItem(MethodView):
     @blp.response(201, TagSchema)
     def post(self, item_id, tag_id):
         item = ItemModel.query.get_or_404(item_id)
         tag = TagModel.query.get_or_404(tag_id)
+
+        if item.store.id != tag.store.id:
+            abort(400, message="Make sure item and tag belong to the same store before linking.")
 
         item.tags.append(tag)
 
