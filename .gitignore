@@ -5,7 +5,5 @@ __pycache__/
 instance/
 data.db
 # Environments
-.env
 .venv
-
 .DS_Store
